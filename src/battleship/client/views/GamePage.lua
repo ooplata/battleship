@@ -19,7 +19,9 @@ function GamePage:new(o)
 	setmetatable(o, self)
 	self.__index = self
 
-	self.player = Player:new("battleship/assets/ship.png")
+	self.player = Player:new()
+	self.player:setsprite("battleship/assets/ship.png")
+
 	self.host = host
 	self.server = server
 	

@@ -1,7 +1,7 @@
 Player = {}
 
-function Player:new(src)
-	o = {}
+function Player:new(o)
+	o = o or {}
 	setmetatable(o, self)
 	self.__index = self
 
@@ -9,7 +9,6 @@ function Player:new(src)
 	self.y = love.graphics.getHeight() - 96
 
 	self.speed = 200
-	self.setsprite(src)
 
 	return o
 end
