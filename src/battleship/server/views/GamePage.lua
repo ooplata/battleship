@@ -1,3 +1,4 @@
+require "battleship/animation"
 require "battleship/player"
 enet = require "enet"
 
@@ -13,6 +14,9 @@ function GamePage:new(o)
 	setmetatable(o, self)
 	self.__index = self
 
+	self.bg = Animation:new()
+	self.bg:setsource("battleship/assets/bg.png", 8, 2)
+
 	self.player = Player:new()
 	self.player:setsprite("battleship/assets/player.png")
 
@@ -25,8 +29,8 @@ function GamePage:new(o)
 end
 
 function GamePage:draw()
-	love.graphics.setColor(love.math.colorFromBytes(45, 162, 255))
-	love.graphics.rectangle('fill', 0, 0, self.width, self.height)
+	love.graphics.setColor(love.math.colorFromBytes(255, 255, 255))
+	self.bg:draw(0, 0)
 
 	player = self.player
 	love.graphics.draw(player.img, player.x, player.y, 0, 1, 1, 0, player.height)
@@ -44,6 +48,8 @@ function GamePage:update(dt)
 			end
 		end
 	end
+
+	self.bg:update(dt)
 
 	player = self.player
 	if love.keyboard.isDown('right') then
