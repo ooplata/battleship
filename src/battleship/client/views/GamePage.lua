@@ -24,7 +24,7 @@ function GamePage:new(o)
 
 	self.host = host
 	self.server = server
-	
+
 	self.width = love.graphics.getWidth()
 	self.height = love.graphics.getHeight()
 
