@@ -18,12 +18,15 @@ function GamePage:new(o)
 
 	self.host = host
 
+	self.width = love.graphics.getWidth()
+	self.height = love.graphics.getHeight()
+
 	return o
 end
 
 function GamePage:draw()
 	love.graphics.setColor(love.math.colorFromBytes(45, 162, 255))
-	love.graphics.rectangle('fill', 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+	love.graphics.rectangle('fill', 0, 0, self.width, self.height)
 
 	player = self.player
 	love.graphics.draw(player.img, player.x, player.y, 0, 1, 1, 0, player.height)
@@ -44,10 +47,10 @@ function GamePage:update(dt)
 
 	player = self.player
 	if love.keyboard.isDown('right') then
-		if player.x < (love.graphics.getWidth() - player.width) then
+		if player.x < (self.width - player.width) then
 			player.x = player.x + (player.speed * dt)
 		else
-			player.x = love.graphics.getWidth() - player.width
+			player.x = self.width - player.width
 		end
 	elseif love.keyboard.isDown('left') then
 		if player.x > 0 then 
@@ -64,10 +67,10 @@ function GamePage:update(dt)
 			player.y = player.height
 		end
 	elseif love.keyboard.isDown('down') then
-		if player.y < love.graphics.getHeight() then 
+		if player.y < self.height then 
 			player.y = player.y + (player.speed * dt)
 		else
-			player.y = love.graphics.getHeight()
+			player.y = self.height
 		end
 	end
 
