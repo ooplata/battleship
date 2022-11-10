@@ -47,15 +47,21 @@ function GamePage:draw()
 end
 
 function GamePage:update(dt)
-	local event = self.host:service()
-	if event then
-		if event.type == 'connect' then
-			--Start game
-		elseif event.type == 'receive' then
-			--Handle server input
+	if self.host then
+		local event = self.host:service()
+		if event then
+			self:onevent(dt, event)
 		end
 	end
 
 	self.bg:update(dt)
 	self.player:update(dt)
+end
+
+function GamePage:onevent(dt, event)
+	if event.type == 'connect' then
+		--Start game
+	elseif event.type == 'receive' then
+		--Handle server input
+	end
 end

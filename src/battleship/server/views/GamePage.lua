@@ -40,15 +40,10 @@ function GamePage:draw()
 end
 
 function GamePage:update(dt)
-	local event = self.host:service()
-	if event then
-		if event.type == 'connect' then
-			--Start game
-		elseif event.type == 'receive' then
-			if event.data == "ping" then
-				--Any new players will be told that the game has already started
-				event.peer:send("started")
-			end
+	if self.host then
+		local event = self.host:service()
+		if event then
+			self:onevent(dt, event)
 		end
 	end
 
@@ -58,5 +53,16 @@ function GamePage:update(dt)
 	if love.keyboard.isDown('space') then
 		--nuke = player:dropnuke()
 		--event.peer:send(nuke.x, nuke.y)
+	end
+end
+
+function GamePage:onevent(dt, event)
+	if event.type == 'connect' then
+		--Start game
+	elseif event.type == 'receive' then
+		if event.data == "ping" then
+			--Any new players will be told that the game has already started
+			event.peer:send("started")
+		end
 	end
 end
