@@ -61,7 +61,6 @@ function MainPage:update(dt)
 					event.peer:send("pong")
 					self.host:flush()
 
-					GamePage.sethost(self.host)
 					self.frame:navigate(GamePage)
 				end
 			end
