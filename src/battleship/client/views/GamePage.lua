@@ -1,8 +1,12 @@
 require "battleship/animation"
 require "battleship/player"
+require "battleship/point"
+require "battleship/rectangle"
+
 enet = require "enet"
 
 GamePage = { frame = nil }
+GamePage.__index = GamePage
 
 local host = nil
 local server = nil
@@ -17,25 +21,37 @@ end
 
 function GamePage:new(o)
 	o = o or {}
-	setmetatable(o, self)
-	self.__index = self
+	setmetatable(o, GamePage)
 
-	self.bg = Animation:new()
-	self.bg:setsource("battleship/assets/bg.png", 8, 2)
+	o.host = host
+	o.server = server
 
-	self.width = love.graphics.getWidth()
-	self.height = love.graphics.getHeight()
+	o.width = love.graphics.getWidth()
+	o.height = love.graphics.getHeight()
 
-	self.player = Player:new(0, self.height - 96)
-	self.player.speed = 200
+	o:addrectangles()
 
-	self.player:setbounds(self.width, self.height)
-	self.player:setsprite("battleship/assets/ship.png")
+	o.bg = Animation:new()
+	o.bg:setsource("battleship/assets/bg.png", 8, 2)
 
-	self.host = host
-	self.server = server
+	o.player = Player:new{x = 0, y = o.height - 96}
+	o.player.speed = 200
+
+	o.player:setsprite("battleship/assets/ship.png")
 
 	return o
+end
+
+function GamePage:addrectangles()
+	self.rectangles = {}
+
+	local point = Point:new{x = 347, y = 220}
+	local rect = Rectangle:new{topleft = point, width = 32, height = 50}
+	self.rectangles[1] = rect
+
+	local point2 = Point:new{x = 0, y = 0}
+	local rect2 = Rectangle:new{topleft = point2, width = 640, height = 50}
+	self.rectangles[2] = rect2
 end
 
 function GamePage:draw()
@@ -55,7 +71,7 @@ function GamePage:update(dt)
 	end
 
 	self.bg:update(dt)
-	self.player:update(dt)
+	self.player:update(dt, self.rectangles)
 end
 
 function GamePage:onevent(dt, event)
