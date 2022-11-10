@@ -1,9 +1,9 @@
 Animation = {}
+Animation.__index = Animation
 
 function Animation:new(o)
 	o = o or {}
-	setmetatable(o, self)
-	self.__index = self
+	setmetatable(o, Animation)
 	return o
 end
 

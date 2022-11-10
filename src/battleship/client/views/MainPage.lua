@@ -2,19 +2,19 @@ require "battleship/ui/frame"
 require "battleship/client/views/GamePage"
 
 MainPage = { frame = nil }
+MainPage.__index = MainPage
 
 local nums = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', '-' }
 
 function MainPage:new(o)
 	o = o or {}
-	setmetatable(o, self)
-	self.__index = self
+	setmetatable(o, MainPage)
 
-	self.host = nil
-	self.server = nil
+	o.host = nil
+	o.server = nil
 
-	self.msg = ""
-	self.ip = ""
+	o.msg = ""
+	o.ip = ""
 
 	return o
 end

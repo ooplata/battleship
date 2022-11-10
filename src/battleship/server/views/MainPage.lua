@@ -4,18 +4,18 @@ require "battleship/server/views/GamePage"
 enet = require "enet"
 
 MainPage = { frame = nil }
+MainPage.__index = MainPage
 
 local nums = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' }
 
 function MainPage:new(o)
 	o = o or {}
-	setmetatable(o, self)
-	self.__index = self
+	setmetatable(o, MainPage)
 
-	self.host = nil
+	o.host = nil
 
-	self.msg = ""
-	self.port = ""
+	o.msg = ""
+	o.port = ""
 
 	return o
 end

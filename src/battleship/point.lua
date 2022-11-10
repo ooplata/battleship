@@ -1,12 +1,8 @@
 Point = { x = 0, y = 0 }
+Point.__index = Point
 
-function Point:new(x, y)
-	o = {}
-	setmetatable(o, self)
-	self.__index = self
-
-	self.x = x
-	self.y = y
-
+function Point:new(o)
+	o = o or {}
+	setmetatable(o, Point)
 	return o
 end

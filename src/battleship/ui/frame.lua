@@ -1,9 +1,9 @@
 Frame = { content = nil }
+Frame.__index = Frame
 
 function Frame:new(o)
 	o = o or {}
-	setmetatable(o, self)
-	self.__index = self
+	setmetatable(o, Frame)
 	return o
 end
 
