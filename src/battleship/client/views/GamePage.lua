@@ -23,14 +23,17 @@ function GamePage:new(o)
 	self.bg = Animation:new()
 	self.bg:setsource("battleship/assets/bg.png", 8, 2)
 
-	self.player = Player:new()
+	self.width = love.graphics.getWidth()
+	self.height = love.graphics.getHeight()
+
+	self.player = Player:new(0, self.height - 96)
+	self.player.speed = 200
+
+	self.player:setbounds(self.width, self.height)
 	self.player:setsprite("battleship/assets/ship.png")
 
 	self.host = host
 	self.server = server
-
-	self.width = love.graphics.getWidth()
-	self.height = love.graphics.getHeight()
 
 	return o
 end
@@ -40,7 +43,7 @@ function GamePage:draw()
 	self.bg:draw(0, 0)
 
 	player = self.player
-	love.graphics.draw(player.img, (self.width / 2) - (player.width / 2), (self.height / 2) - (player.height / 2), 0, 1, 1, 0, player.height)
+	love.graphics.draw(player.img, player.x, player.y, 0, 1, 1, 0, player.height)
 end
 
 function GamePage:update(dt)
@@ -54,33 +57,5 @@ function GamePage:update(dt)
 	end
 
 	self.bg:update(dt)
-
-	player = self.player
-	if love.keyboard.isDown('right') then
-		if player.x < (self.width - player.width) then
-			player.x = player.x + (player.speed * dt)
-		else
-			player.x = self.width - player.width
-		end
-	elseif love.keyboard.isDown('left') then
-		if player.x > 0 then 
-			player.x = player.x - (player.speed * dt)
-		else
-			player.x = 0
-		end
-	end
-
-	if love.keyboard.isDown('up') then
-		if player.y > player.height then
-			player.y = player.y - (player.speed * dt)
-		else
-			player.y = player.height
-		end
-	elseif love.keyboard.isDown('down') then
-		if player.y < self.height then 
-			player.y = player.y + (player.speed * dt)
-		else
-			player.y = self.height
-		end
-	end
+	self.player:update(dt)
 end
