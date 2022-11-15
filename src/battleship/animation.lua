@@ -16,17 +16,25 @@ function Animation:getquad()
 end
 
 function Animation:update(dt)
-	self.timer = self.timer + dt * self.speed
+	if self.permanent or self.timer < self.maxtimer then
+		self.timer = self.timer + dt * self.speed
+	else
+		self.finished = true
+	end
 end
 
-function Animation:setsource(path, frames, speed)
-	self.img = love.graphics.newImage(path)
+function Animation:setsource(path, frames, speed, loops)
 	self.timer = 0
+	self.quads = {}
 
 	self.frames = frames
 	self.speed = speed
-	self.quads = {}
 
+	self.maxtimer = frames * loops
+	self.permanent = loops == 0
+	self.finished = false
+
+	self.img = love.graphics.newImage(path)
 	local w = self.img:getWidth()
 	local h = self.img:getHeight()
 
