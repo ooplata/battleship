@@ -49,9 +49,20 @@ function GamePage:addrectangles()
 	local rect = Rectangle:new{topleft = point, width = 32, height = 50}
 	self.rectangles[1] = rect
 
-	local point2 = Point:new{x = 0, y = 0}
-	local rect2 = Rectangle:new{topleft = point2, width = 640, height = 50}
-	self.rectangles[2] = rect2
+	point = Point:new{x = 0, y = 0}
+	rect = Rectangle:new{topleft = point, width = 640, height = 36}
+	self.rectangles[2] = rect
+
+	rect = Rectangle:new{topleft = point, width = 0, height = 480}
+	self.rectangles[3] = rect
+
+	point = Point:new{x = 0, y = 516}
+	rect = Rectangle:new{topleft = point, width = 640, height = 0}
+	self.rectangles[4] = rect
+
+	point = Point:new{x = 640, y = 0}
+	rect = Rectangle:new{topleft = point, width = 36, height = 480}
+	self.rectangles[5] = rect
 end
 
 function GamePage:draw()
