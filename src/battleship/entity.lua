@@ -1,4 +1,5 @@
 require "battleship/point"
+require "battleship/rectangle"
 
 Entity = { x = 0, y = 0 }
 Entity.__index = Entity
@@ -57,16 +58,8 @@ function Entity:collides(x, y, rectangles)
 end
 
 function Entity:collidingindex(x, y, rectangles)
-	local right = x + self.width
-	local bottom = y + self.height
+	local tl = Point:new{x = x, y = y}
+	local hitbox = Rectangle:new{topleft = tl, width = self.width, height = self.height}
 
-	for i, rect in ipairs(rectangles) do
-		local xcollision = rect.left < right and x < rect.right
-		local ycollision = rect.top < bottom and y < rect.bottom
-
-		if xcollision and ycollision then
-			return i
-		end
-	end
-	return 0
+	return hitbox:collidingindex(rectangles)
 end
