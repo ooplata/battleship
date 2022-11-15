@@ -27,3 +27,23 @@ function Rectangle:contains(point)
 	end
 	return false
 end
+
+function Rectangle:collides(rectangle)
+	local xcollision = rectangle.left < self.right and self.left < rectangle.right
+	local ycollision = rectangle.top < self.bottom and self.top < rectangle.bottom
+
+	return xcollision and ycollision
+end
+
+function Rectangle:anycollides(rectangles)
+	return not (self:collidingindex(rectangles) == 0)
+end
+
+function Rectangle:collidingindex(rectangles)
+	for i, rect in ipairs(rectangles) do
+		if rect:collides(self) then
+			return i
+		end
+	end
+	return 0
+end
