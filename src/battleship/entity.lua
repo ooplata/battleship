@@ -1,11 +1,11 @@
 require "battleship/point"
 
-Player = { x = 0, y = 0 }
-Player.__index = Player
+Entity = { x = 0, y = 0 }
+Entity.__index = Entity
 
-function Player:new(o)
+function Entity:new(o)
 	o = o or {}
-	setmetatable(o, Player)
+	setmetatable(o, Entity)
 
 	o.xdir = 'none'
 	o.ydir = 'none'
@@ -13,13 +13,13 @@ function Player:new(o)
 	return o
 end
 
-function Player:setsprite(path)
+function Entity:setsprite(path)
 	self.img = love.graphics.newImage(path)
 	self.width = self.img:getWidth()
 	self.height = self.img:getHeight()
 end
 
-function Player:update(dt, rectangles)
+function Entity:update(dt, rectangles)
 	local nx = self.x
 	local ny = self.y
 
@@ -52,7 +52,7 @@ function Player:update(dt, rectangles)
 	end
 end
 
-function Player:collides(x, y, rectangles)
+function Entity:collides(x, y, rectangles)
 	local left = x
 	local right = x + self.width
 	local top = y

@@ -1,6 +1,6 @@
-require "battleship/player"
+require "battleship/entity"
 
-Reticle = Player:new()
+Reticle = Entity:new()
 
 function Reticle:dropnuke()
 end

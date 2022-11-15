@@ -1,5 +1,5 @@
 require "battleship/animation"
-require "battleship/player"
+require "battleship/entity"
 require "battleship/point"
 require "battleship/rectangle"
 
@@ -34,7 +34,7 @@ function GamePage:new(o)
 	o.bg = Animation:new()
 	o.bg:setsource("battleship/assets/bg.png", 8, 2)
 
-	o.player = Player:new{x = 0, y = o.height - 96}
+	o.player = Entity:new{x = 0, y = o.height - 96}
 	o.player.speed = 200
 
 	o.player:setsprite("battleship/assets/ship.png")

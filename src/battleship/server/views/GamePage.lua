@@ -1,7 +1,7 @@
 require "battleship/animation"
-require "battleship/player"
 require "battleship/point"
 require "battleship/rectangle"
+require "battleship/server/reticle"
 
 enet = require "enet"
 
@@ -27,7 +27,7 @@ function GamePage:new(o)
 	o.bg = Animation:new()
 	o.bg:setsource("battleship/assets/bg.png", 8, 2)
 
-	o.player = Player:new{x = o.width / 2, y = o.height - 96}
+	o.player = Reticle:new{x = o.width / 2, y = o.height - 96}
 	o.player.speed = 200
 
 	o.player:setsprite("battleship/assets/player.png")
@@ -42,9 +42,20 @@ function GamePage:addrectangles()
 	local rect = Rectangle:new{topleft = point, width = 32, height = 50}
 	self.rectangles[1] = rect
 
-	local point2 = Point:new{x = 0, y = 0}
-	local rect2 = Rectangle:new{topleft = point2, width = 640, height = 50}
-	self.rectangles[2] = rect2
+	point = Point:new{x = 0, y = 0}
+	rect = Rectangle:new{topleft = point, width = 640, height = 36}
+	self.rectangles[2] = rect
+
+	rect = Rectangle:new{topleft = point, width = 0, height = 480}
+	self.rectangles[3] = rect
+
+	point = Point:new{x = 0, y = 516}
+	rect = Rectangle:new{topleft = point, width = 640, height = 0}
+	self.rectangles[4] = rect
+
+	point = Point:new{x = 640, y = 0}
+	rect = Rectangle:new{topleft = point, width = 36, height = 480}
+	self.rectangles[5] = rect
 end
 
 function GamePage:draw()
@@ -68,7 +79,7 @@ function GamePage:update(dt)
 
 	if love.keyboard.isDown('space') then
 		--nuke = player:dropnuke()
-		--event.peer:send(nuke.x, nuke.y)
+		--event.peer:send(12, 12)
 	end
 end
 
