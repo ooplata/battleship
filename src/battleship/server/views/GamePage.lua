@@ -24,13 +24,15 @@ function GamePage:new(o)
 
 	o:addrectangles()
 
+	o.mines = {}
+	o.mineimg = love.graphics.newImage("battleship/assets/mine.png")
+
 	o.bg = Animation:new()
 	o.bg:setsource("battleship/assets/bg.png", 8, 2, 0)
 
 	o.player = Reticle:new{x = o.width / 2, y = o.height - 96}
-	o.player.speed = 200
-
 	o.player:setsprite("battleship/assets/player.png")
+	o.player.speed = 200
 
 	return o
 end
@@ -64,6 +66,12 @@ function GamePage:draw()
 
 	player = self.player
 	love.graphics.draw(player.img, player.x, player.y, 0, 1, 1, 0, player.height)
+
+	for _, itm in ipairs(self.mines) do
+		if itm then
+			love.graphics.draw(self.mineimg, itm.topleft.x, itm.topleft.y, 0, 1, 1, 0, itm.height)
+		end
+	end
 end
 
 function GamePage:update(dt)
@@ -76,10 +84,22 @@ function GamePage:update(dt)
 
 	self.bg:update(dt)
 	self.player:update(dt, self.rectangles)
+end
 
-	if love.keyboard.isDown('space') then
-		--nuke = player:dropnuke()
-		--event.peer:send(12, 12)
+function GamePage:keypressed(key, scancode, isrepeat)
+	if not isrepeat and key == 'space' then
+		local mine = self.player:dropmine(self.mineimg:getWidth(), self.mineimg:getHeight())
+		if mine:anycollides(self.mines) then return end
+
+		local loc = 1
+		for _, itm in ipairs(self.mines) do
+			if itm == nil then
+				break
+			end
+			loc = loc + 1
+		end
+
+		self.mines[loc] = mine
 	end
 end
 
