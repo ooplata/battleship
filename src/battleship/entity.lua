@@ -53,18 +53,20 @@ function Entity:update(dt, rectangles)
 end
 
 function Entity:collides(x, y, rectangles)
-	local left = x
+	return not (self:collidingindex(x, y, rectangles) == 0)
+end
+
+function Entity:collidingindex(x, y, rectangles)
 	local right = x + self.width
-	local top = y
 	local bottom = y + self.height
 
 	for i, rect in ipairs(rectangles) do
-		local xcollision = rect.left < right and left < rect.right
-		local ycollision = rect.top < bottom and top < rect.bottom
+		local xcollision = rect.left < right and x < rect.right
+		local ycollision = rect.top < bottom and y < rect.bottom
 
 		if xcollision and ycollision then
-			return true
+			return i
 		end
 	end
-	return false
+	return 0
 end
