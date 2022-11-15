@@ -35,7 +35,7 @@ function GamePage:new(o)
 	o.bg:setsource("battleship/assets/bg.png", 8, 2, 0)
 
 	o.player = Entity:new{x = 0, y = o.height - 96}
-	o.player.speed = 200
+	o.player.speed = 100
 
 	o.player:setsprite("battleship/assets/ship.png")
 
