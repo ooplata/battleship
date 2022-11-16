@@ -100,6 +100,7 @@ function GamePage:keypressed(key, scancode, isrepeat)
 		end
 
 		self.mines[loc] = mine
+		self.host:broadcast("mine" .. mine.topleft.x .. "," .. mine.topleft.y .. "," .. loc)
 	end
 end
 

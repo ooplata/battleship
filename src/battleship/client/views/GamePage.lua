@@ -31,12 +31,14 @@ function GamePage:new(o)
 
 	o:addrectangles()
 
+	o.mines = {}
+	o.mineimg = love.graphics.newImage("battleship/assets/mine.png")
+
 	o.bg = Animation:new()
 	o.bg:setsource("battleship/assets/bg.png", 8, 2, 0)
 
 	o.player = Entity:new{x = 0, y = o.height - 96}
 	o.player.speed = 100
-
 	o.player:setsprite("battleship/assets/ship.png")
 
 	return o
@@ -69,6 +71,12 @@ function GamePage:draw()
 	love.graphics.setColor(love.math.colorFromBytes(255, 255, 255))
 	self.bg:draw(0, 0)
 
+	for _, itm in ipairs(self.mines) do
+		if itm then
+			love.graphics.draw(self.mineimg, itm.topleft.x, itm.topleft.y, 0, 1, 1, 0, itm.height)
+		end
+	end
+
 	player = self.player
 	love.graphics.draw(player.img, player.x, player.y, 0, 1, 1, 0, player.height)
 end
@@ -89,6 +97,33 @@ function GamePage:onevent(dt, event)
 	if event.type == 'connect' then
 		--Start game
 	elseif event.type == 'receive' then
-		--Handle server input
+		local msg = event.data:sub(1, 4)
+		local data = event.data:sub(5, #event.data)
+
+		if msg == "mine" then
+			local location = split(data, ",")
+			local x = tonumber(location[1])
+			local y = tonumber(location[2])
+
+			local point = Point:new{x = x, y = y}
+			local mine = Rectangle:new{topleft = point, width = self.mineimg:getWidth(), height = self.mineimg:getHeight()}
+
+			local loc = tonumber(location[3])
+			self.mines[loc] = mine
+		end
 	end
+end
+
+function split(input, sep)
+	if sep == nil then
+		sep = "%s"
+	end
+
+	local t = {}
+	i = 1
+	for str in string.gmatch(input, "([^" .. sep .. "]+)") do
+		t[i] = str
+		i = i + 1
+	end
+	return t
 end
