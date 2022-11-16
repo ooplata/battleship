@@ -66,11 +66,23 @@ function GamePage:draw()
 
 	for _, itm in ipairs(self.mines) do
 		if not itm.exploded then
-			love.graphics.draw(self.mineimg, itm.topleft.x, itm.topleft.y, 0, 1, 1, 0, 0)
+			love.graphics.draw(self.mineimg, itm.topleft.x, itm.topleft.y)
 		end
 	end
 
-	love.graphics.draw(self.player.img, self.player.x, self.player.y, 0, 1, 1, 0, 0)
+	love.graphics.draw(self.player.img, self.player.x, self.player.y)
+
+	if self.lost then
+		if not self.lostimg then
+			self.lostimg = love.graphics.newImage("battleship/assets/lost.png")
+		end
+		love.graphics.draw(self.lostimg, 0, 0)
+	elseif self.won then
+		if not self.wonimg then
+			self.wonimg = love.graphics.newImage("battleship/assets/won.png")
+		end
+		love.graphics.draw(self.wonimg, 0, 0)
+	end
 end
 
 function GamePage:update(dt)
@@ -82,6 +94,8 @@ function GamePage:update(dt)
 	end
 
 	self.bg:update(dt)
+	if self.won or self.lost then return end
+
 	self.player:update(dt, self.rectangles)
 end
 
@@ -122,6 +136,10 @@ function GamePage:onevent(dt, event)
 		elseif msg == "boom" then
 			local index = tonumber(data)
 			self:getactivemines()[index].exploded = true
+		elseif msg == "loss" then
+			self.won = true
+		elseif msg == "win" then
+			self.lost = true
 		end
 	end
 end
