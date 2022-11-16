@@ -1,5 +1,5 @@
 require "battleship/ui/frame"
-require "battleship/server/views/MainPage"
+require "battleship/views/MainPage"
 
 local frame
 
