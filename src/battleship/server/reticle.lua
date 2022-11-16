@@ -12,6 +12,6 @@ function Reticle:new(o)
 end
 
 function Reticle:dropmine(width, height)
-	local point = Point:new{x = self.x + (self.width / 4), y = self.y - (self.height / 4)}
+	local point = Point:new{x = self.x + (self.width / 4), y = self.y + (self.height / 4)}
 	return Rectangle:new{topleft = point, width = width, height = height}
 end

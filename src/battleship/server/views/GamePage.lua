@@ -40,23 +40,23 @@ end
 function GamePage:addrectangles()
 	self.rectangles = {}
 
-	local point = Point:new{x = 347, y = 220}
+	local point = Point:new{x = 347, y = 180}
 	local rect = Rectangle:new{topleft = point, width = 32, height = 50}
 	self.rectangles[1] = rect
 
 	point = Point:new{x = 0, y = 0}
-	rect = Rectangle:new{topleft = point, width = 640, height = 36}
+	rect = Rectangle:new{topleft = point, width = self.width, height = 0}
 	self.rectangles[2] = rect
 
-	rect = Rectangle:new{topleft = point, width = 0, height = 480}
+	rect = Rectangle:new{topleft = point, width = 0, height = self.height}
 	self.rectangles[3] = rect
 
-	point = Point:new{x = 0, y = 516}
-	rect = Rectangle:new{topleft = point, width = 640, height = 0}
+	point = Point:new{x = 0, y = self.height}
+	rect = Rectangle:new{topleft = point, width = self.width, height = 0}
 	self.rectangles[4] = rect
 
-	point = Point:new{x = 640, y = 0}
-	rect = Rectangle:new{topleft = point, width = 36, height = 480}
+	point = Point:new{x = self.width, y = 0}
+	rect = Rectangle:new{topleft = point, width = 0, height = self.height}
 	self.rectangles[5] = rect
 end
 
@@ -64,14 +64,13 @@ function GamePage:draw()
 	love.graphics.setColor(love.math.colorFromBytes(255, 255, 255))
 	self.bg:draw(0, 0)
 
-	player = self.player
-	love.graphics.draw(player.img, player.x, player.y, 0, 1, 1, 0, player.height)
-
 	for _, itm in ipairs(self.mines) do
-		if itm then
-			love.graphics.draw(self.mineimg, itm.topleft.x, itm.topleft.y, 0, 1, 1, 0, itm.height)
+		if not itm.exploded then
+			love.graphics.draw(self.mineimg, itm.topleft.x, itm.topleft.y, 0, 1, 1, 0, 0)
 		end
 	end
+
+	love.graphics.draw(self.player.img, self.player.x, self.player.y, 0, 1, 1, 0, 0)
 end
 
 function GamePage:update(dt)
@@ -91,26 +90,38 @@ function GamePage:keypressed(key, scancode, isrepeat)
 		local mine = self.player:dropmine(self.mineimg:getWidth(), self.mineimg:getHeight())
 		if mine:anycollides(self.mines) then return end
 
-		local loc = 1
-		for _, itm in ipairs(self.mines) do
-			if itm == nil then
-				break
-			end
-			loc = loc + 1
-		end
-
+		local loc = #self.mines + 1
 		self.mines[loc] = mine
 		self.host:broadcast("mine" .. mine.topleft.x .. "," .. mine.topleft.y .. "," .. loc)
 	end
+end
+
+function GamePage:getactivemines()
+	local active = {}
+	local i = 1
+
+	for _, itm in ipairs(self.mines) do
+		if not itm.exploded then
+			active[i] = itm
+			i = i + 1
+		end
+	end
+	return active
 end
 
 function GamePage:onevent(dt, event)
 	if event.type == 'connect' then
 		--Start game
 	elseif event.type == 'receive' then
-		if event.data == "ping" then
+		local msg = event.data:sub(1, 4)
+		local data = event.data:sub(5, #event.data)
+
+		if msg == "ping" then
 			--Any new players will be told that the game has already started
 			event.peer:send("started")
+		elseif msg == "boom" then
+			local index = tonumber(data)
+			self:getactivemines()[index].exploded = true
 		end
 	end
 end

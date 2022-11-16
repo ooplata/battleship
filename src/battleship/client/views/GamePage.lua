@@ -32,14 +32,19 @@ function GamePage:new(o)
 	o:addrectangles()
 
 	o.mines = {}
+	o.activemines = {}
 	o.mineimg = love.graphics.newImage("battleship/assets/mine.png")
 
 	o.bg = Animation:new()
 	o.bg:setsource("battleship/assets/bg.png", 8, 2, 0)
 
 	o.player = Entity:new{x = 0, y = o.height - 96}
-	o.player.speed = 100
 	o.player:setsprite("battleship/assets/ship.png")
+	o.player.speed = 100
+
+	o.player.hearts = { true, true, true }
+	o.heartimg = love.graphics.newImage("battleship/assets/point-filled.png")
+	o.emptyheartimg = love.graphics.newImage("battleship/assets/point.png")
 
 	return o
 end
@@ -47,23 +52,23 @@ end
 function GamePage:addrectangles()
 	self.rectangles = {}
 
-	local point = Point:new{x = 347, y = 220}
+	local point = Point:new{x = 347, y = 180}
 	local rect = Rectangle:new{topleft = point, width = 32, height = 50}
 	self.rectangles[1] = rect
 
 	point = Point:new{x = 0, y = 0}
-	rect = Rectangle:new{topleft = point, width = 640, height = 36}
+	rect = Rectangle:new{topleft = point, width = self.width, height = 0}
 	self.rectangles[2] = rect
 
-	rect = Rectangle:new{topleft = point, width = 0, height = 480}
+	rect = Rectangle:new{topleft = point, width = 0, height = self.height}
 	self.rectangles[3] = rect
 
-	point = Point:new{x = 0, y = 516}
-	rect = Rectangle:new{topleft = point, width = 640, height = 0}
+	point = Point:new{x = 0, y = self.height}
+	rect = Rectangle:new{topleft = point, width = self.width, height = 0}
 	self.rectangles[4] = rect
 
-	point = Point:new{x = 640, y = 0}
-	rect = Rectangle:new{topleft = point, width = 36, height = 480}
+	point = Point:new{x = self.width, y = 0}
+	rect = Rectangle:new{topleft = point, width = 0, height = self.height}
 	self.rectangles[5] = rect
 end
 
@@ -72,13 +77,22 @@ function GamePage:draw()
 	self.bg:draw(0, 0)
 
 	for _, itm in ipairs(self.mines) do
-		if itm then
-			love.graphics.draw(self.mineimg, itm.topleft.x, itm.topleft.y, 0, 1, 1, 0, itm.height)
+		if not itm.exploded then
+			love.graphics.draw(self.mineimg, itm.topleft.x, itm.topleft.y, 0, 1, 1, 0, 0)
 		end
 	end
 
-	player = self.player
-	love.graphics.draw(player.img, player.x, player.y, 0, 1, 1, 0, player.height)
+	love.graphics.draw(self.player.img, self.player.x, self.player.y, 0, 1, 1, 0, 0)
+
+	local x = 88
+	for _, heart in ipairs(self.player.hearts) do
+		if heart then
+			love.graphics.draw(self.heartimg, x, 16, 0, 1, 1, 0, 0)
+		else
+			love.graphics.draw(self.emptyheartimg, x, 16, 0, 1, 1, 0, 0)
+		end
+		x = x - 24
+	end
 end
 
 function GamePage:update(dt)
@@ -91,6 +105,46 @@ function GamePage:update(dt)
 
 	self.bg:update(dt)
 	self.player:update(dt, self.rectangles)
+
+	local active = {}
+	local i = 0
+	for _, itm in ipairs(self.mines) do
+		if not itm.exploded then
+			love.graphics.draw(self.mineimg, itm.topleft.x, itm.topleft.y, 0, 1, 1, 0, 0)
+		end
+	end
+
+	local index = self.player:collidingindex(self.player.x, self.player.y, self.activemines)
+	if index > 0 then
+		self:onminecollision(self.activemines[index], index)
+	end
+end
+
+function GamePage:getactivemines()
+	local active = {}
+	local i = 1
+
+	for _, itm in ipairs(self.mines) do
+		if not itm.exploded then
+			active[i] = itm
+			i = i + 1
+		end
+	end
+	return active
+end
+
+function GamePage:onminecollision(mine, index)
+	for i, heart in ipairs(self.player.hearts) do
+		if heart then
+			self.player.hearts[i] = false
+			break
+		end
+	end
+
+	mine.exploded = true
+	self.activemines = self:getactivemines()
+
+	self.server:send("boom" .. index)
 end
 
 function GamePage:onevent(dt, event)
@@ -110,6 +164,7 @@ function GamePage:onevent(dt, event)
 
 			local loc = tonumber(location[3])
 			self.mines[loc] = mine
+			self.activemines = self:getactivemines()
 		end
 	end
 end
