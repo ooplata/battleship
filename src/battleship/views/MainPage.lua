@@ -47,10 +47,11 @@ function MainPage:keypressed(key, scancode, isrepeat)
 
 				self.choicemsg = "You will be joining a lobby."
 				self.typemsg = "Type out an IP address followed by a port (IP-port) to get started: "
+			else
+				return
 			end
 
 			self.userselected = true
-			return
 		end
 
 		if self.host == nil then
