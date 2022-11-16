@@ -8,7 +8,7 @@ function Animation:new(o)
 end
 
 function Animation:draw(x, y)
-	love.graphics.draw(self.img, self:getquad(), x, y, 0, 1, 1)
+	love.graphics.draw(self.img, self:getquad(), x, y)
 end
 
 function Animation:getquad()
