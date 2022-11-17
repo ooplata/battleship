@@ -76,10 +76,8 @@ function GamePage:draw()
 	love.graphics.setColor(love.math.colorFromBytes(255, 255, 255))
 	self.bg:draw(0, 0)
 
-	for _, itm in ipairs(self.mines) do
-		if not itm.exploded then
-			love.graphics.draw(self.mineimg, itm.topleft.x, itm.topleft.y)
-		end
+	for _, itm in ipairs(self.activemines) do
+		love.graphics.draw(self.mineimg, itm.topleft.x, itm.topleft.y)
 	end
 
 	love.graphics.draw(self.player.img, self.player.x, self.player.y)
