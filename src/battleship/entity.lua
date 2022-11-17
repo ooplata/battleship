@@ -20,7 +20,7 @@ function Entity:setsprite(path)
 	self.height = self.img:getHeight()
 end
 
-function Entity:update(dt, rectangles)
+function Entity:move(dt, rectangles)
 	local nx = self.x
 	local ny = self.y
 

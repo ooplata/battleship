@@ -116,7 +116,7 @@ function GamePage:update(dt)
 	self.bg:update(dt)
 	if self.won or self.lost then return end
 
-	self.player:update(dt, self.rectangles)
+	self.player:move(dt, self.rectangles)
 
 	local index = self.player:collidingindex(self.player.x, self.player.y, self.activemines)
 	if index > 0 then
