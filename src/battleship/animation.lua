@@ -36,11 +36,12 @@ function Animation:setsource(path, frames, speed, loops)
 
 	self.img = love.graphics.newImage(path)
 	local w = self.img:getWidth()
-	local h = self.img:getHeight()
 
-	local width = w / frames
+	self.width = w / frames
+	self.height = self.img:getHeight()
+
 	for i = 0, frames - 1 do
-		local quad = love.graphics.newQuad(i * width, 0, width, h, self.img)
+		local quad = love.graphics.newQuad(i * self.width, 0, self.width, self.height, self.img)
 		table.insert(self.quads, quad)
 	end
 end
