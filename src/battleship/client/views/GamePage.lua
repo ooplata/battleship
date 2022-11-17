@@ -120,14 +120,6 @@ function GamePage:update(dt)
 
 	self.player:update(dt, self.rectangles)
 
-	local active = {}
-	local i = 0
-	for _, itm in ipairs(self.mines) do
-		if not itm.exploded then
-			love.graphics.draw(self.mineimg, itm.topleft.x, itm.topleft.y)
-		end
-	end
-
 	local index = self.player:collidingindex(self.player.x, self.player.y, self.activemines)
 	if index > 0 then
 		self:onminecollision(self.activemines[index], index)
