@@ -26,6 +26,7 @@ function GamePage:new(o)
 
 	o.mines = {}
 	o.mineimg = love.graphics.newImage("battleship/assets/mine.png")
+	o.inmineimg = love.graphics.newImage("battleship/assets/mine-inactive.png")
 
 	o.bg = Animation:new()
 	o.bg:setsource("battleship/assets/bg.png", 8, 2, 0)
@@ -67,6 +68,8 @@ function GamePage:draw()
 	for _, itm in ipairs(self.mines) do
 		if not itm.exploded then
 			love.graphics.draw(self.mineimg, itm.topleft.x, itm.topleft.y)
+		else
+			love.graphics.draw(self.inmineimg, itm.topleft.x, itm.topleft.y)
 		end
 	end
 
