@@ -23,8 +23,18 @@ function Animation:update(dt)
 	end
 end
 
-function Animation:setsource(path, frames, speed, loops)
+function Animation:restart()
 	self.timer = 0
+	self.finished = false
+end
+
+function Animation:stop()
+	self.permanent = false
+	self.finished = true
+end
+
+function Animation:setsource(path, frames, speed, loops)
+	self:restart()
 	self.quads = {}
 
 	self.frames = frames
@@ -32,7 +42,6 @@ function Animation:setsource(path, frames, speed, loops)
 
 	self.maxtimer = frames * loops
 	self.permanent = loops == 0
-	self.finished = false
 
 	self.img = love.graphics.newImage(path)
 	local w = self.img:getWidth()

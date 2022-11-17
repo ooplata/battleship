@@ -73,7 +73,7 @@ function GamePage:draw()
 		end
 	end
 
-	love.graphics.draw(self.player.img, self.player.x, self.player.y)
+	self.player:draw()
 
 	if self.lost then
 		if not self.lostimg then
@@ -97,6 +97,8 @@ function GamePage:update(dt)
 	end
 
 	self.bg:update(dt)
+	self.player:update(dt)
+
 	if self.won or self.lost then return end
 
 	self.player:move(dt, self.rectangles)

@@ -1,3 +1,4 @@
+require "battleship/animation"
 require "battleship/point"
 require "battleship/rectangle"
 
@@ -14,10 +15,46 @@ function Entity:new(o)
 	return o
 end
 
+function Entity:setanimation(animation, revertonfinished)
+	self.animation = animation
+	self.revertonfinished = revertonfinished
+
+	self.width = animation.width
+	self.height = animation.height
+
+	animation:restart()
+end
+
+function Entity:stopanimation()
+	self.revertonfinished = true
+	self.animation:stop()
+end
+
 function Entity:setsprite(path)
 	self.img = love.graphics.newImage(path)
 	self.width = self.img:getWidth()
 	self.height = self.img:getHeight()
+end
+
+function Entity:draw()
+	if self.animation then
+		if not self.animation.finished or not self.revertonfinished then
+			self.animation:draw(self.x, self.y)
+			return
+		end
+	end
+
+	love.graphics.draw(self.img, self.x, self.y)
+end
+
+function Entity:update(dt)
+	if self.animation then
+		self.animation:update(dt)
+		if self.animation.finished and self.animation.revertonfinished then
+			self.width = self.img:getWidth()
+			self.width = self.img:getHeight()
+		end
+	end
 end
 
 function Entity:move(dt, rectangles)
