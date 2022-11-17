@@ -159,8 +159,8 @@ function GamePage:onminecollision(mine, index)
 end
 
 function GamePage:onevent(dt, event)
-	if event.type == 'connect' then
-		--Start game
+	if event.type == 'disconnect' then
+		self.won = true
 	elseif event.type == 'receive' then
 		local msg = event.data:sub(1, 4)
 		local data = event.data:sub(5, #event.data)
