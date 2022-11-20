@@ -95,8 +95,22 @@ function Entity:collides(x, y, rectangles)
 end
 
 function Entity:collidingindex(x, y, rectangles)
-	local tl = Point:new{x = x, y = y}
-	local hitbox = Rectangle:new{topleft = tl, width = self.width, height = self.height}
+	if not self.xhitoffset then
+		self.xhitoffset = 0
+	end
+	if not self.yhitoffset then
+		self.yhitoffset = 0
+	end
+
+	if not self.hbwidth then
+		self.hbwidth = self.width
+	end
+	if not self.hbheight then
+		self.hbheight = self.height
+	end
+
+	local tl = Point:new{x = x + self.xhitoffset, y = y + self.yhitoffset}
+	local hitbox = Rectangle:new{topleft = tl, width = self.hbwidth, height = self.hbheight}
 
 	return hitbox:collidingindex(rectangles)
 end
