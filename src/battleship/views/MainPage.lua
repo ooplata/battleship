@@ -96,9 +96,13 @@ end
 
 function MainPage:onclientinput(key)
 	if key == 'return' then
-		local ip = self.ip:gsub("-", ":")
-		local result, err = socket.dns.tohostname(ip)
+		local ip = split(self.ip, "-")
+		if not #ip == 2 then
+			self.msg = "The introduced IP is invalid, please try again"
+			return
+		end
 
+		local result, err = socket.dns.tohostname(ip[1])
 		if result == nil then
 			self.msg = "The introduced IP is invalid, please try again"
 		else
@@ -185,4 +189,18 @@ function contains(table, val)
 		end
 	end
 	return false
+end
+
+function split(input, sep)
+	if sep == nil then
+		sep = "%s"
+	end
+
+	local t = {}
+	i = 1
+	for str in string.gmatch(input, "([^" .. sep .. "]+)") do
+		t[i] = str
+		i = i + 1
+	end
+	return t
 end
