@@ -37,6 +37,7 @@ function GamePage:new(o)
 	o.mineimg = love.graphics.newImage("battleship/assets/mine.png")
 
 	o.bg = love.graphics.newImage("battleship/assets/bg.png")
+	o.fg = love.graphics.newImage("battleship/assets/fg.png")
 
 	o.player = Entity:new{x = o.start.x, y = o.start.y}
 	o.player:setsprite("battleship/assets/ship.png")
@@ -202,6 +203,7 @@ function GamePage:draw()
 	end
 
 	self.player:draw()
+	love.graphics.draw(self.fg, 0, 0)
 
 	local x = 88
 	for _, heart in ipairs(self.player.hearts) do

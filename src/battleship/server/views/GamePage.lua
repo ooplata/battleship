@@ -29,6 +29,7 @@ function GamePage:new(o)
 	o.inmineimg = love.graphics.newImage("battleship/assets/mine-inactive.png")
 
 	o.bg = love.graphics.newImage("battleship/assets/bg.png")
+	o.fg = love.graphics.newImage("battleship/assets/fg.png")
 
 	o.player = Reticle:new{x = o.width / 2, y = o.height - 96}
 	o.player:setsprite("battleship/assets/player.png")
@@ -171,6 +172,7 @@ function GamePage:draw()
 
 	self.player:draw()
 
+	love.graphics.draw(self.fg, 0, 0)
 	if self.lost then
 		if not self.lostimg then
 			self.lostimg = love.graphics.newImage("battleship/assets/lost.png")
