@@ -5,7 +5,7 @@ local frame
 
 function love.load()
 	love.window.setMode(640, 480)
-	love.window.setTitle("Battleship")
+	love.window.setTitle("Bomberfrog")
 	love.window.setIcon(love.image.newImageData("battleship/assets/logo.png"))
 
 	frame = Frame:new()

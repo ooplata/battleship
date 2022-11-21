@@ -14,6 +14,8 @@ function MainPage:new(o)
 	o.host = nil
 	o.server = nil
 
+	o.bg = love.graphics.newImage("battleship/assets/start.png")
+
 	o.userselected = false
 
 	o.choicemsg = "Press up to become a lobby. Press down to join a lobby."
@@ -26,8 +28,10 @@ function MainPage:new(o)
 end
 
 function MainPage:draw()
+	love.graphics.draw(self.bg, 0, 0)
+
 	love.graphics.print("")
-	love.graphics.print("	Welcome to Battleship!", 0, 24)
+	love.graphics.print("	Welcome to Bomberfrog!", 0, 24)
 	love.graphics.print("	" .. self.choicemsg, 0, 48)
 	love.graphics.print("	" .. self.typemsg .. self.ip, 0, 72)
 
