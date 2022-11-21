@@ -18,7 +18,7 @@ function MainPage:new(o)
 	o.host = nil
 	o.server = nil
 
-	o.bigfont = love.graphics.newFont(22)
+	o.bigfont = love.graphics.newFont("battleship/assets/Robot_Font.otf", 28)
 	o.bigfont:setFilter("nearest")
 
 	o.bg = love.graphics.newImage("battleship/assets/start.png")
@@ -57,7 +57,7 @@ function MainPage:draw()
 	end
 
 	love.graphics.setColor(love.math.colorFromBytes(53, 44, 11))
-	love.graphics.print(self.ip, self.bigfont, 220, 340)
+	love.graphics.print(self.ip, self.bigfont, 220, 342)
 	love.graphics.print(self.msg, 206, 312)
 
 	love.graphics.setColor(1, 1, 1)
