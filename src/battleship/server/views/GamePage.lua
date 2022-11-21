@@ -238,7 +238,7 @@ function GamePage:onevent(dt, event)
 			self:getactivemines()[index].exploded = true
 		elseif msg == "loss" then
 			self.won = true
-		elseif msg == "win" then
+		elseif msg == "winn" then
 			self.lost = true
 		end
 	end

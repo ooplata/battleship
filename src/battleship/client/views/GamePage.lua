@@ -29,6 +29,7 @@ function GamePage:new(o)
 	o.width = love.graphics.getWidth()
 	o.height = love.graphics.getHeight()
 
+	o:chooselocations()
 	o:addrectangles()
 
 	o.mines = {}
@@ -37,7 +38,7 @@ function GamePage:new(o)
 
 	o.bg = love.graphics.newImage("battleship/assets/bg.png")
 
-	o.player = Entity:new{x = o.width / 2, y = o.height - 96}
+	o.player = Entity:new{x = o.start.x, y = o.start.y}
 	o.player:setsprite("battleship/assets/ship.png")
 
 	o.player.xhitoffset = 3
@@ -55,6 +56,18 @@ function GamePage:new(o)
 	o.hitanimation:setsource("battleship/assets/ship-damaged.png", 4, 2, 1)
 
 	return o
+end
+
+function GamePage:chooselocations()
+	local startlocs = { Point:new{x = 72, y = 382}, Point:new{x = 536, y = 78}, Point:new{x = 106, y = 68}, Point:new{x = 520, y = 400} }
+	local destlocs = { Point:new{x = 536, y = 78}, Point:new{x = 72, y = 382}, Point:new{x = 520, y = 400}, Point:new{x = 106, y = 68} }
+
+	local rand = love.math.random(#startlocs)
+	self.startflag = love.graphics.newImage("battleship/assets/flag-start.png")
+	self.destflag = love.graphics.newImage("battleship/assets/flag-destination.png")
+
+	self.start = startlocs[rand]
+	self.destination = Rectangle:new{topleft = destlocs[rand], width = self.destflag:getWidth(), height = self.destflag:getHeight() }
 end
 
 function GamePage:addrectangles()
@@ -181,6 +194,9 @@ end
 function GamePage:draw()
 	love.graphics.draw(self.bg, 0, 0)
 
+	love.graphics.draw(self.startflag, self.start.x, self.start.y)
+	love.graphics.draw(self.destflag, self.destination.topleft.x, self.destination.topleft.y)
+
 	for _, itm in ipairs(self.activemines) do
 		love.graphics.draw(self.mineimg, itm.topleft.x, itm.topleft.y)
 	end
@@ -226,8 +242,13 @@ function GamePage:update(dt)
 	end
 
 	self.player:move(dt, self.rectangles)
-	local index = self.player:collidingindex(self.player.x, self.player.y, self.activemines)
+	if self.player:collides(self.player.x, self.player.y, { self.destination }) then
+		self.won = true
+		self.server:send("winn")
+		return
+	end
 
+	local index = self.player:collidingindex(self.player.x, self.player.y, self.activemines)
 	if index > 0 then
 		self:onminecollision(self.activemines[index], index)
 	end
