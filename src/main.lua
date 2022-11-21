@@ -1,3 +1,4 @@
+require "battleship/point"
 require "battleship/ui/frame"
 require "battleship/views/MainPage"
 
@@ -27,5 +28,12 @@ end
 function love.keypressed(key, scancode, isrepeat)
 	if frame.content.keypressed then
 		frame.content:keypressed(key, scancode, isrepeat)
+	end
+end
+
+function love.mousepressed(x, y, button, istouch, presses)
+	if frame.content.mousepressed then
+		local point = Point:new{x = x, y = y}
+		frame.content:mousepressed(point, button, istouch, presses)
 	end
 end
