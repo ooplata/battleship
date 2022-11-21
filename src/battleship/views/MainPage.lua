@@ -96,9 +96,16 @@ end
 
 function MainPage:onclientinput(key)
 	if key == 'return' then
-		self.host = enet.host_create()
-		self.server = self.host:connect(self.ip:gsub("-", ":"))
-		self.msg = "Looking for the desired lobby..."
+		local ip = self.ip:gsub("-", ":")
+		local result, err = socket.dns.tohostname(ip)
+
+		if result == nil then
+			self.msg = "The introduced IP is invalid, please try again"
+		else
+			self.host = enet.host_create()
+			self.server = self.host:connect(self.ip:gsub("-", ":"))
+			self.msg = "Looking for the desired lobby..."
+		end
 	elseif key == 'backspace' then
 		self.ip = self.ip:sub(1, -2)
 	elseif contains(ipfilter, key) then
@@ -108,12 +115,16 @@ end
 
 function MainPage:onserverinput(key)
 	if key == 'return' then
-		self.host = enet.host_create("*:" .. self.ip)
-		self.msg = "Waiting for players. Your IP: " .. self.address
+		if self.ip:len() == 4 then
+			self.host = enet.host_create("*:" .. self.ip)
+			self.msg = "Waiting for players. Your IP: " .. self.address
+		else
+			self.msg = "Invalid port. A port has to be 4 numbers"
+		end
 	elseif key == 'backspace' then
 		self.ip = self.ip:sub(1, -2)
 	elseif self.ip:len() == 4 then
-		self.msg = "A port is 4 characters at most"
+		self.msg = "A port is 4 numbers at most"
 	elseif contains(portfilter, key) then
 		self.ip = self.ip .. key
 	else
