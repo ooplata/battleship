@@ -1,5 +1,9 @@
+require "battleship/point"
+require "battleship/rectangle"
 require "battleship/ui/frame"
+
 local enet = require "enet"
+local socket = require "socket"
 
 MainPage = { frame = nil }
 MainPage.__index = MainPage
@@ -14,12 +18,16 @@ function MainPage:new(o)
 	o.host = nil
 	o.server = nil
 
+	o.bigfont = love.graphics.newFont(22)
+	o.bigfont:setFilter("nearest")
+
 	o.bg = love.graphics.newImage("battleship/assets/start.png")
 
-	o.userselected = false
+	o.btnimg = love.graphics.newImage("battleship/assets/start-buttons.png")
+	o.inputimg = love.graphics.newImage("battleship/assets/start-input.png")
 
-	o.choicemsg = "Press up to become a lobby. Press down to join a lobby."
-	o.typemsg = ""
+	o:addbuttons()
+	o.selected = 0
 
 	o.msg = ""
 	o.ip = ""
@@ -27,44 +35,62 @@ function MainPage:new(o)
 	return o
 end
 
+function MainPage:addbuttons()
+	self.buttons = {}
+
+	local point = Point:new{x = 207, y = 302}
+	local rect = Rectangle:new{topleft = point, width = 242, height = 51}
+	self.buttons[1] = rect
+
+	point = Point:new{x = 208, y = 366}
+	rect = Rectangle:new{topleft = point, width = 242, height = 51}
+	self.buttons[2] = rect
+end
+
 function MainPage:draw()
 	love.graphics.draw(self.bg, 0, 0)
 
-	love.graphics.print("")
-	love.graphics.print("	Welcome to Bomberfrog!", 0, 24)
-	love.graphics.print("	" .. self.choicemsg, 0, 48)
-	love.graphics.print("	" .. self.typemsg .. self.ip, 0, 72)
+	if self.selected == 0 then
+		love.graphics.draw(self.btnimg, 0, 0)
+	else
+		love.graphics.draw(self.inputimg, 0, 0)
+	end
 
-	love.graphics.print("	" .. self.msg, 0, 96)
+	love.graphics.setColor(love.math.colorFromBytes(53, 44, 11))
+	love.graphics.print(self.ip, self.bigfont, 220, 340)
+	love.graphics.print(self.msg, 206, 312)
+
+	love.graphics.setColor(1, 1, 1)
+end
+
+function MainPage:mousepressed(point, button, istouch, presses)
+	if self.selected == 0 then
+		for i, rect in ipairs(self.buttons) do
+			if rect:contains(point) then
+				self.selected = i
+				if i == 1 then
+					local hn = socket.dns.gethostname()
+					local ip, _ = socket.dns.toip(hn)
+
+					self.address = ip
+					self.msg = "IP Address: " .. ip
+				end
+
+				return
+			end
+		end
+	end
 end
 
 function MainPage:keypressed(key, scancode, isrepeat)
-	if not isrepeat then
-		if not self.userselected then
-			if key == 'up' then
-				self.isclient = false
+	if isrepeat or not self.host == nil then
+		return
+	end
 
-				self.choicemsg = "You are a lobby."
-				self.typemsg = "Type out a port to get started: "
-			elseif key == 'down' then
-				self.isclient = true
-
-				self.choicemsg = "You will be joining a lobby."
-				self.typemsg = "Type out an IP address followed by a port (IP-port) to get started: "
-			else
-				return
-			end
-
-			self.userselected = true
-		end
-
-		if self.host == nil then
-			if self.isclient then
-				self:onclientinput(key)
-			else
-				self:onserverinput(key)
-			end
-		end
+	if self.selected == 1 then
+		self:onserverinput(key)
+	elseif self.selected == 2 then
+		self:onclientinput(key)
 	end
 end
 
@@ -72,34 +98,26 @@ function MainPage:onclientinput(key)
 	if key == 'return' then
 		self.host = enet.host_create()
 		self.server = self.host:connect(self.ip:gsub("-", ":"))
-
 		self.msg = "Looking for the desired lobby..."
 	elseif key == 'backspace' then
 		self.ip = self.ip:sub(1, -2)
-		self.msg = ""
 	elseif contains(ipfilter, key) then
 		self.ip = self.ip .. key
-		self.msg = ""
-	else
-		self.msg = "An IP address is composed of numbers and dots, with a 4 number port at the end."
 	end
 end
 
 function MainPage:onserverinput(key)
 	if key == 'return' then
 		self.host = enet.host_create("*:" .. self.ip)
-
-		self.msg = "Waiting for players..."
+		self.msg = "Waiting for players. Your IP: " .. self.address
 	elseif key == 'backspace' then
 		self.ip = self.ip:sub(1, -2)
-		self.msg = ""
 	elseif self.ip:len() == 4 then
-		self.msg = "A port is 4 characters at most."
+		self.msg = "A port is 4 characters at most"
 	elseif contains(portfilter, key) then
 		self.ip = self.ip .. key
-		self.msg = ""
 	else
-		self.msg = "A port is composed of 4 numbers only."
+		self.msg = "IP Address: " .. self.address
 	end
 end
 
@@ -107,10 +125,10 @@ function MainPage:update(dt)
 	if self.host then
 		local event = self.host:service()
 		if event then
-			if self.isclient then
-				self:onclientevent(event)
-			else
+			if self.selected == 1 then
 				self:onserverevent(event)
+			else
+				self:onclientevent(event)
 			end
 		end
 	end
