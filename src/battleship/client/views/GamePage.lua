@@ -54,7 +54,7 @@ function GamePage:new(o)
 	o.emptyheartimg = love.graphics.newImage("battleship/assets/point.png")
 
 	o.hitanimation = Animation:new()
-	o.hitanimation:setsource("battleship/assets/ship-damaged.png", 4, 2, 1)
+	o.hitanimation:setsource("battleship/assets/ship-damaged.png", 2, 20, 10)
 
 	return o
 end
@@ -239,9 +239,6 @@ function GamePage:update(dt)
 	self.player:update(dt)
 
 	if self.won or self.lost then return end
-	if self.player.animation and self.player.animation.finished then
-		self.player.speed = 100
-	end
 
 	self.player:move(dt, self.rectangles)
 	if self.player:collides(self.player.x, self.player.y, { self.destination }) then
@@ -250,9 +247,11 @@ function GamePage:update(dt)
 		return
 	end
 
-	local index = self.player:collidingindex(self.player.x, self.player.y, self.activemines)
-	if index > 0 then
-		self:onminecollision(self.activemines[index], index)
+	if not self.player.animation or self.player.animation.finished then
+		local index = self.player:collidingindex(self.player.x, self.player.y, self.activemines)
+		if index > 0 then
+			self:onminecollision(self.activemines[index], index)
+		end
 	end
 end
 
@@ -287,7 +286,6 @@ function GamePage:onminecollision(mine, index)
 
 	self.server:send("boom" .. index)
 	self.player:setanimation(self.hitanimation, true)
-	self.player.speed = 0
 end
 
 function GamePage:onevent(dt, event)
