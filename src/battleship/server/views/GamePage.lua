@@ -35,6 +35,8 @@ function GamePage:new(o)
 	o.player:setsprite("battleship/assets/player.png")
 	o.player.speed = 200
 
+	o.boom = love.audio.newSource("battleship/assets/boom.wav", "static")
+
 	return o
 end
 
@@ -237,7 +239,9 @@ function GamePage:onevent(dt, event)
 			event.peer:send("started")
 		elseif msg == "boom" then
 			local index = tonumber(data)
+
 			self:getactivemines()[index].exploded = true
+			self.boom:play()
 		elseif msg == "loss" then
 			self.won = true
 		elseif msg == "winn" then

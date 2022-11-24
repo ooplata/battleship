@@ -56,6 +56,8 @@ function GamePage:new(o)
 	o.hitanimation = Animation:new()
 	o.hitanimation:setsource("battleship/assets/ship-damaged.png", 2, 20, 10)
 
+	o.boom = love.audio.newSource("battleship/assets/boom.wav", "static")
+
 	return o
 end
 
@@ -285,6 +287,7 @@ function GamePage:onminecollision(mine, index)
 	self.activemines = self:getactivemines()
 
 	self.server:send("boom" .. index)
+	self.boom:play()
 	self.player:setanimation(self.hitanimation, true)
 end
 
