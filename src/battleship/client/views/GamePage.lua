@@ -58,6 +58,9 @@ function GamePage:new(o)
 
 	o.boom = love.audio.newSource("battleship/assets/boom.wav", "static")
 
+	o.bigfont = love.graphics.newFont("battleship/assets/Pixelmania.ttf", 28)
+	o.bigfont:setFilter("nearest")
+
 	return o
 end
 
@@ -221,12 +224,23 @@ function GamePage:draw()
 		if not self.lostimg then
 			self.lostimg = love.graphics.newImage("battleship/assets/lost.png")
 		end
+
 		love.graphics.draw(self.lostimg, 0, 0)
+
+		love.graphics.setColor(love.math.colorFromBytes(203, 210, 108))
+		love.graphics.print("BETTER LUCK", self.bigfont, 112, 48)
+		love.graphics.print("NEXT TIME", self.bigfont, 156, 108)
+		love.graphics.setColor(1, 1, 1)
 	elseif self.won then
 		if not self.wonimg then
 			self.wonimg = love.graphics.newImage("battleship/assets/won.png")
 		end
+
 		love.graphics.draw(self.wonimg, 0, 0)
+
+		love.graphics.setColor(love.math.colorFromBytes(203, 210, 108))
+		love.graphics.print("YOU WON", self.bigfont, 190, 64)
+		love.graphics.setColor(1, 1, 1)
 	end
 end
 
