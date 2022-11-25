@@ -3,12 +3,13 @@ require "battleship/rectangle"
 require "battleship/ui/frame"
 
 local enet = require "enet"
+local http = require "socket.http"
 local socket = require "socket"
 
 MainPage = { frame = nil }
 MainPage.__index = MainPage
 
-local ipfilter = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', '-' }
+local ipfilter = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', ',' }
 local portfilter = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' }
 
 function MainPage:new(o)
@@ -69,11 +70,16 @@ function MainPage:mousepressed(point, button, istouch, presses)
 			if rect:contains(point) then
 				self.selected = i
 				if i == 1 then
-					local hn = socket.dns.gethostname()
-					local ip, _ = socket.dns.toip(hn)
+					local s = socket.udp()
+					s:setpeername("74.125.115.104", 80)
+
+					local ip, _ = s:getsockname()
+					s:close()
 
 					self.address = ip
-					self.msg = "IP Address: " .. ip
+					self.msg = "Introduce a 4-digit code, then press Enter"
+				else
+					self.msg = "The host must give you a key, type it out then press Enter"
 				end
 
 				return
@@ -83,7 +89,7 @@ function MainPage:mousepressed(point, button, istouch, presses)
 end
 
 function MainPage:keypressed(key, scancode, isrepeat)
-	if isrepeat or not self.host == nil then
+	if isrepeat or not (self.host == nil) then
 		return
 	end
 
@@ -96,24 +102,35 @@ end
 
 function MainPage:onclientinput(key)
 	if key == 'return' then
-		local ip = split(self.ip, "-")
-		if not #ip == 2 then
-			self.msg = "The introduced IP is invalid, please try again"
+		local ip = split(self.ip, ",")
+		if not (#ip == 2) then
+			self.msg = "The introduced key is invalid, please try again"
 			return
 		end
 
+		if not (#ip[2] == 4) then
+			self.msg = "The introduced key is invalid, please try again"
+			return
+		end
+
+		self.msg = "Loading..."
 		local result, err = socket.dns.tohostname(ip[1])
+
 		if result == nil then
-			self.msg = "The introduced IP is invalid, please try again"
+			self.msg = "The introduced key is invalid, please try again"
 		else
 			self.host = enet.host_create()
-			self.server = self.host:connect(self.ip:gsub("-", ":"))
+			self.server = self.host:connect(ip[1] .. ":" .. ip[2])
 			self.msg = "Looking for the desired lobby..."
 		end
 	elseif key == 'backspace' then
 		self.ip = self.ip:sub(1, -2)
+		self.msg = "The host must give you a key, type it out then press Enter"
 	elseif contains(ipfilter, key) then
 		self.ip = self.ip .. key
+		self.msg = "The host must give you a key, type it out then press Enter"
+	else
+		self.msg = "The key cannot have this character"
 	end
 end
 
@@ -121,18 +138,20 @@ function MainPage:onserverinput(key)
 	if key == 'return' then
 		if self.ip:len() == 4 then
 			self.host = enet.host_create("*:" .. self.ip)
-			self.msg = "Waiting for players. Your IP: " .. self.address
+			self.msg = "Waiting for players. Key: " .. self.address .. "," .. self.ip
 		else
-			self.msg = "Invalid port. A port has to be 4 numbers"
+			self.msg = "The code must be 4 numbers"
 		end
 	elseif key == 'backspace' then
 		self.ip = self.ip:sub(1, -2)
+		self.msg = "Introduce a 4-digit code, then press Enter"
 	elseif self.ip:len() == 4 then
-		self.msg = "A port is 4 numbers at most"
+		self.msg = "The code must be 4 numbers at most"
 	elseif contains(portfilter, key) then
 		self.ip = self.ip .. key
+		self.msg = "Introduce a 4-digit code, then press Enter"
 	else
-		self.msg = "IP Address: " .. self.address
+		self.msg = "The code must be numbers only"
 	end
 end
 
