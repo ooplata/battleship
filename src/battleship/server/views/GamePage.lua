@@ -184,9 +184,9 @@ function GamePage:draw()
 		end
 
 		love.graphics.draw(self.lostimg, 0, 0)
-		love.graphics.print("YOU WON", self.bigfont, 190, 64)
-		love.graphics.setColor(love.math.colorFromBytes(203, 210, 108))
 
+		love.graphics.setColor(love.math.colorFromBytes(203, 210, 108))
+		love.graphics.print("YOU WON", self.bigfont, 190, 64)
 		love.graphics.setColor(1, 1, 1)
 	elseif self.lost then
 		if not self.wonimg then
